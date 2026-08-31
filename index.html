@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonoMods // Репозиторий модов и ресурс-паков</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;0,800;1,400&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        mono: {
+                            50: '#fafafa',
+                            100: '#f4f4f5',
+                            200: '#e4e4e7',
+                            300: '#d4d4d8',
+                            400: '#a1a1aa',
+                            500: '#71717a',
+                            600: '#52525b',
+                            700: '#3f3f46',
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                            pure: '#000000',
+                            white: '#ffffff',
+                        }
+                    },
+                    boxShadow: {
+                        'mono': '4px 4px 0px 0px rgba(255, 255, 255, 0.9)',
+                        'mono-dark': '4px 4px 0px 0px rgba(0, 0, 0, 0.9)',
+                        'mono-subtle': '0 0 0 1px rgba(255, 255, 255, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::selection {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* Mono grid background */
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .bg-stripes {
+            background: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.03),
+                rgba(255, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 8px
+            );
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+
+        .border-dashed-mono {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Scanning line animation */
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+        .animate-scan {
+            animation: scanline 8s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-mono-950 text-mono-100 font-mono min-h-screen flex flex-col antialiased selection:bg-white selection:text-black">
+
+    <!-- Top Announcement / Ticker Bar -->
+    <div class="border-b border-mono-800 bg-mono-pure py-1.5 px-4 text-xs tracking-wider flex justify-between items-center text-mono-400 overflow-hidden">
+        <div class="flex items-center space-x-4">
+            <span class="inline-flex items-center gap-1.5 text-white">
+                <span class="w-2 h-2 rounded-none bg-emerald-400 animate-pulse"></span>
+                SYSTEM: ONLINE
+            </span>
+            <span class="hidden md:inline text-mono-500">|</span>
+            <span class="hidden md:inline text-mono-400">ПРАВИЛО: ПУБЛИКАЦИЯ ТОЛЬКО ПОСЛЕ ВЕРИФИКАЦИИ EMAIL С УКАЗАНИЕМ ВЕРСИИ И ЗАГРУЗЧИКА</span>
+        </div>
+        <div class="flex items-center space-x-3 text-[11px]">
+            <span id="systemTime" class="text-mono-300">00:00:00 UTC</span>
+            <span class="text-mono-600">//</span>
+            <span class="text-white font-bold tracking-widest">[v2.6_STABLE]</span>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="border-b border-mono-800 bg-mono-950/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- MonoMods Logo -->
+            <a href="#" onclick="resetFilters(); return false;" class="flex items-center gap-3.5 group cursor-pointer">
+                <!-- Geometric Minimalist SVG Logo -->
+                <div class="relative w-11 h-11 bg-white text-black flex items-center justify-center font-black transition-all duration-300 group-hover:bg-mono-200 group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(113,113,122,0.8)]">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter">
+                        <!-- Isometric Cubes and stylized 'M' -->
+                        <path d="M4 7l8-4 8 4v10l-8 4-8-4V7z" fill="#000000" stroke="#000000" />
+                        <path d="M4 7l8 4 8-4" stroke="#ffffff" stroke-width="2" />
+                        <path d="M12 11v10" stroke="#ffffff" stroke-width="2" />
+                        <!-- Futuristic M Accent -->
+                        <path d="M8 10v4l4-2 4 2v-4" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+                    </svg>
+                    <!-- Corner bracket accents -->
+                    <span class="absolute -top-1 -left-1 w-1.5 h-1.5 border-t-2 border-l-2 border-white"></span>
+                    <span class="absolute -bottom-1 -right-1 w-1.5 h-1.5 border-b-2 border-r-2 border-white"></span>
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-2xl font-black tracking-tighter text-white font-sans uppercase">MONO<span class="text-mono-400">MODS</span></span>
+                        <span class="text-[9px] bg-mono-800 text-mono-300 px-1 py-0.5 border border-mono-700 font-mono">HUB</span>
+                    </div>
+                    <span class="text-[10px] text-mono-400 font-mono tracking-widest uppercase">MODS & RESOURCE PACKS</span>
+                </div>
+            </a>
+
+            <!-- Quick Nav / Links -->
+            <nav class="hidden lg:flex items-center space-x-1 text-sm font-medium">
+                <button onclick="setTabFilter('all')" class="nav-tab active px-3.5 py-2 border border-transparent hover:border-mono-700 text-white hover:bg-mono-900 transition-all text-xs tracking-wider uppercase">
+                    [ ВСЕ РЕСУРСЫ ]
+                </button>
+                <button onclick="setTabFilter('mod')" class="nav-tab px-3.5 py-2 border border-transparent hover:border-mono-700 text-mono-400 hover:text-white hover:bg-mono-900 transition-all text-xs tracking-wider uppercase">
+                    // МОДЫ
+                </button>
+                <button onclick="setTabFilter('resourcepack')" class="nav-tab px-3.5 py-2 border border-transparent hover:border-mono-700 text-mono-400 hover:text-white hover:bg-mono-900 transition-all text-xs tracking-wider uppercase">
+                    // РЕСУРС-ПАКИ
+                </button>
+                <button onclick="openGuidelinesModal()" class="px-3.5 py-2 border border-transparent hover:border-mono-700 text-mono-400 hover:text-white hover:bg-mono-900 transition-all text-xs tracking-wider uppercase">
+                    СПРАВКА
+                </button>
+            </nav>
+
+            <!-- Actions: Upload & User Auth -->
+            <div class="flex items-center gap-3">
+                <!-- Publish Button -->
+                <button onclick="handlePublishClick()" class="relative group bg-white text-black font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2 transition-transform active:translate-y-0.5 hover:bg-mono-100 shadow-[3px_3px_0px_0px_#52525b]">
+                    <i data-lucide="plus-square" class="w-4 h-4"></i>
+                    <span>Опубликовать</span>
+                </button>
+
+                <!-- Auth / User profile state -->
+                <div id="authSection" class="flex items-center">
+                    <!-- Dynamic rendering in JS -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Hero Banner -->
+    <section class="border-b border-mono-800 bg-grid-pattern relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-mono-900 border border-mono-700 text-mono-300 text-xs">
+                        <span class="w-1.5 h-1.5 bg-white"></span>
+                        <span>ЧИСТЫЙ МОНОХРОМНЫЙ РЕПОЗИТОРИЙ ИГРОВЫХ МОДИФИКАЦИЙ</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-5xl font-sans font-extrabold text-white uppercase tracking-tight leading-none">
+                        СТРОГИЙ ПОРЯДОК.<br>
+                        <span class="bg-white text-black px-2 inline-block mt-1">ТОЧНЫЕ ВЕРСИИ</span> И ЗАГРУЗЧИКИ.
+                    </h1>
+
+                    <p class="text-mono-400 text-sm sm:text-base max-w-2xl font-mono leading-relaxed">
+                        Платформа для публикации авторских модов и текстур-паков. Публикация строго регламентирована: обязательная почтовая верификация, точное указание <span class="text-white font-bold">Mod Loader (Fabric, Forge, NeoForge, Quilt)</span> и целевой версии игры.
+                    </p>
+
+                    <!-- Fast Stat Matrix -->
+                    <div class="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="border border-mono-800 bg-mono-900/70 p-2.5">
+                            <span class="text-mono-500 block text-[10px]">ПУБЛИКАЦИЙ</span>
+                            <span id="statTotalItems" class="text-base font-bold text-white">0</span>
+                        </div>
+                        <div class="border border-mono-800 bg-mono-900/70 p-2.5">
+                            <span class="text-mono-500 block text-[10px]">ЗАГРУЗЧИКОВ</span>
+                            <span class="text-base font-bold text-white">4 ПОДДЕРЖКИ</span>
+                        </div>
+                        <div class="border border-mono-800 bg-mono-900/70 p-2.5">
+                            <span class="text-mono-500 block text-[10px]">АВТОРОВ</span>
+                            <span id="statAuthors" class="text-base font-bold text-white">1,402</span>
+                        </div>
+                        <div class="border border-mono-800 bg-mono-900/70 p-2.5">
+                            <span class="text-mono-500 block text-[10px]">СТАТУС ПРОВЕРКИ</span>
+                            <span class="text-base font-bold text-emerald-400">EMAIL STRICT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Logo Visual Art -->
+                <div class="lg:col-span-4 border border-mono-800 bg-mono-900/90 p-5 relative">
+                    <div class="text-[10px] text-mono-500 border-b border-mono-800 pb-2 mb-3 flex justify-between">
+                        <span>SYS_LOG // ID: MM-9021</span>
+                        <span>[MONO_BOX]</span>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center p-6 bg-mono-pure border border-dashed-mono space-y-3">
+                        <div class="w-16 h-16 border-2 border-white flex items-center justify-center relative shadow-[4px_4px_0_0_#fff]">
+                            <span class="text-2xl font-black text-white font-sans">M//M</span>
+                            <div class="absolute -top-1 -right-1 w-2 h-2 bg-white"></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs font-bold text-white">MonoMods Standard</div>
+                            <div class="text-[11px] text-mono-400">No bloat. No ads. Raw tech.</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-[11px] text-mono-400 space-y-1">
+                        <div class="flex justify-between">
+                            <span>Требование публикации:</span>
+                            <span class="text-white">Email Verified</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Формат метаданных:</span>
+                            <span class="text-white">Strict Loader Matrix</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content & Filter Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        
+        <!-- Controls & Filter Toolbar -->
+        <div class="bg-mono-900 border border-mono-800 p-4 mb-8 space-y-4">
+            
+            <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                
+                <!-- Search Box -->
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="w-4 h-4 text-mono-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        oninput="applyFilters()"
+                        placeholder="Поиск по названию, тегам или автору..." 
+                        class="w-full bg-mono-950 border border-mono-700 text-white pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-white transition-colors placeholder:text-mono-600"
+                    >
+                    <button onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-mono-500 hover:text-white text-xs hidden" id="clearSearchBtn">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Select Filters -->
+                <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                    
+                    <!-- Type Filter -->
+                    <select id="filterType" onchange="applyFilters()" class="bg-mono-950 border border-mono-700 text-white px-3 py-2 text-xs focus:outline-none focus:border-white cursor-pointer">
+                        <option value="all">ТИП: ВСЕ</option>
+                        <option value="mod">ТОЛЬКО МОДЫ</option>
+                        <option value="resourcepack">ТОЛЬКО РЕСУРС-ПАКИ</option>
+                    </select>
+
+                    <!-- Loader Filter (MANDATORY REQUIREMENT HIGHLIGHT) -->
+                    <select id="filterLoader" onchange="applyFilters()" class="bg-mono-950 border border-mono-700 text-white px-3 py-2 text-xs focus:outline-none focus:border-white cursor-pointer font-bold">
+                        <option value="all">ЗАГРУЗЧИК: ЛЮБОЙ</option>
+                        <option value="Fabric">FABRIC</option>
+                        <option value="Forge">FORGE</option>
+                        <option value="NeoForge">NEOFORGE</option>
+                        <option value="Quilt">QUILT</option>
+                        <option value="Vanilla">VANILLA / PACK</option>
+                    </select>
+
+                    <!-- Version Filter -->
+                    <select id="filterVersion" onchange="applyFilters()" class="bg-mono-950 border border-mono-700 text-white px-3 py-2 text-xs focus:outline-none focus:border-white cursor-pointer">
+                        <option value="all">ВЕРСИЯ: ВСЕ</option>
+                        <option value="1.21.4">1.21.4</option>
+                        <option value="1.21.1">1.21.1</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.20.1">1.20.1</option>
+                        <option value="1.19.4">1.19.4</option>
+                        <option value="1.18.2">1.18.2</option>
+                        <option value="1.16.5">1.16.5</option>
+                    </select>
+
+                    <!-- Sort -->
+                    <select id="filterSort" onchange="applyFilters()" class="bg-mono-950 border border-mono-700 text-white px-3 py-2 text-xs focus:outline-none focus:border-white cursor-pointer">
+                        <option value="newest">СНАЧАЛА НОВЫЕ</option>
+                        <option value="downloads">ПО СКАЧИВАНИЯМ</option>
+                        <option value="name">ПО НАЗВАНИЮ</option>
+                    </select>
+
+                </div>
+            </div>
+
+            <!-- Active Filters Chip Matrix -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-mono-800 text-[11px] text-mono-400">
+                <div class="flex items-center gap-2">
+                    <span>АКТИВНЫЙ ФИЛЬТР:</span>
+                    <div id="filterTagsBadge" class="flex gap-1.5 flex-wrap">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="text-mono-500">
+                    НАЙДЕНО: <span id="resultsCount" class="text-white font-bold">0</span> ОБЪЕКТОВ
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mods / Packs Grid -->
+        <div id="itemsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamically Rendered via JS -->
+        </div>
+
+        <!-- Empty State (Hidden by default) -->
+        <div id="emptyState" class="hidden border border-dashed-mono bg-mono-900/50 p-12 text-center my-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-mono-800 text-mono-400 mb-4 border border-mono-700">
+                <i data-lucide="package-open" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-white uppercase tracking-wider">Ничего не найдено</h3>
+            <p class="text-xs text-mono-400 mt-1 max-w-sm mx-auto font-mono">
+                По заданным критериям версий или загрузчиков не нашлось ни одного мода или ресурс-пака.
+            </p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 border border-white text-xs bg-white text-black font-bold uppercase hover:bg-mono-200">
+                Сбросить фильтры
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-mono-800 bg-mono-pure mt-auto text-xs text-mono-400 py-10 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-3 md:col-span-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-white text-black font-black flex items-center justify-center text-xs">M</div>
+                    <span class="text-white font-sans font-bold tracking-tight text-lg">MONOMODS</span>
+                </div>
+                <p class="text-mono-400 text-xs max-w-md font-mono">
+                    Независимый минималистичный хаб модов. Все загружаемые файлы строго проверяются на наличие метаданных версий и загрузчиков. Доступ к публикации защищен почтовой аутентификацией.
+                </p>
+                <div class="text-[10px] text-mono-500 font-mono">
+                    &copy; <span id="currentYear"></span> MonoMods Protocol. All files belong to their respective authors.
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="text-white font-bold tracking-wider uppercase text-[11px]">// СПЕЦИФИКАЦИИ</div>
+                <ul class="space-y-1 text-mono-400 text-[11px]">
+                    <li><a href="#" onclick="openGuidelinesModal(); return false;" class="hover:text-white underline">Правила публикации</a></li>
+                    <li><a href="#" onclick="filterByLoaderOnly('Fabric'); return false;" class="hover:text-white">Fabric Репозиторий</a></li>
+                    <li><a href="#" onclick="filterByLoaderOnly('Forge'); return false;" class="hover:text-white">Forge / NeoForge Репозиторий</a></li>
+                    <li><a href="#" onclick="filterByLoaderOnly('Quilt'); return false;" class="hover:text-white">Quilt Репозиторий</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <div class="text-white font-bold tracking-wider uppercase text-[11px]">// БЕЗОПАСНОСТЬ</div>
+                <p class="text-[11px] text-mono-400">
+                    Каждая публикация привязывается к подтвержденному адресу электронной почты для предотвращения спама и распространения вредоносного ПО.
+                </p>
+                <div class="p-2 border border-mono-800 bg-mono-950 text-[10px] text-mono-300">
+                    HASH: SHA-256 VERIFIED
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- 1. AUTH / REGISTER / LOGIN MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-mono-950 border-2 border-white max-w-md w-full p-6 relative shadow-[8px_8px_0px_0px_#27272a]">
+            
+            <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-mono-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="space-y-1 mb-6">
+                <div class="text-[10px] bg-mono-900 text-mono-400 inline-block px-1.5 py-0.5 border border-mono-800">
+                    AUTH_GATE // EMAIL REQUIRED
+                </div>
+                <h3 class="text-xl font-sans font-bold text-white uppercase tracking-tight" id="authModalTitle">
+                    Регистрация автора
+                </h3>
+                <p class="text-xs text-mono-400">
+                    Для публикации модов и ресурс-паков обязательна регистрация по почте.
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Адрес электронной почты <span class="text-white">*</span>
+                    </label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-4 h-4 text-mono-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="email" 
+                            id="authEmail" 
+                            required 
+                            placeholder="creator@domain.xyz" 
+                            class="w-full bg-mono-900 border border-mono-700 text-white pl-9 pr-3 py-2.5 focus:outline-none focus:border-white"
+                        >
+                    </div>
+                    <span class="text-[10px] text-mono-500 mt-1 block">На этот адрес привязывается аккаунт разработчика</span>
+                </div>
+
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Никнейм / Автор <span class="text-white">*</span>
+                    </label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 text-mono-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="text" 
+                            id="authNickname" 
+                            required 
+                            placeholder="MonoCraft_Dev" 
+                            class="w-full bg-mono-900 border border-mono-700 text-white pl-9 pr-3 py-2.5 focus:outline-none focus:border-white"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Пароль <span class="text-white">*</span>
+                    </label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-mono-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="password" 
+                            id="authPassword" 
+                            required 
+                            placeholder="••••••••••••" 
+                            minlength="6"
+                            class="w-full bg-mono-900 border border-mono-700 text-white pl-9 pr-3 py-2.5 focus:outline-none focus:border-white"
+                        >
+                    </div>
+                </div>
+
+                <div class="p-3 border border-mono-800 bg-mono-900 text-[10px] text-mono-400 space-y-1">
+                    <div class="flex items-center gap-1.5 text-white font-bold">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        Политика репозитория MonoMods
+                    </div>
+                    <p>
+                        Регистрируясь, вы подтверждаете корректность описаний загрузчиков (Fabric/Forge/etc.) и совместимости версий при публикации.
+                    </p>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-3 bg-white text-black font-bold uppercase hover:bg-mono-200 transition-colors shadow-[3px_3px_0px_0px_#52525b]"
+                >
+                    Завершить регистрацию и войти
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- 2. PUBLISH MODAL (STRICT: LOADER & VERSION REQUIRED, EMAIL CHECK) -->
+    <div id="publishModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-mono-950 border-2 border-white max-w-2xl w-full p-6 sm:p-8 my-8 relative shadow-[10px_10px_0px_0px_#27272a] max-h-[90vh] overflow-y-auto">
+            
+            <button onclick="closeModal('publishModal')" class="absolute top-4 right-4 text-mono-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="border-b border-mono-800 pb-4 mb-6">
+                <div class="flex items-center gap-2 text-[10px] text-mono-400 mb-1">
+                    <span class="px-1.5 py-0.5 bg-mono-900 border border-mono-800 text-white">REPOS_UPLOAD</span>
+                    <span>// АВТОР: <span id="pubAuthorEmail" class="text-white font-bold underline"></span></span>
+                </div>
+                <h2 class="text-2xl font-sans font-black text-white uppercase tracking-tight">
+                    Публикация модификации / ресурс-пака
+                </h2>
+                <p class="text-xs text-mono-400 font-mono mt-1">
+                    Заполните спецификацию. Поля <span class="text-white font-bold">[Версия]</span> и <span class="text-white font-bold">[Загрузчик]</span> строго обязательны для каталогизации.
+                </p>
+            </div>
+
+            <!-- Upload Form -->
+            <form id="publishForm" onsubmit="handlePublishSubmit(event)" class="space-y-5 text-xs">
+                
+                <!-- Title & Type -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-2">
+                        <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                            Название проекта <span class="text-white">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="pubTitle" 
+                            required 
+                            placeholder="MonoShaders Ultra / Dynamic Lights Mono" 
+                            class="w-full bg-mono-900 border border-mono-700 text-white px-3 py-2.5 focus:outline-none focus:border-white"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                            Тип ресурса <span class="text-white">*</span>
+                        </label>
+                        <select id="pubType" required class="w-full bg-mono-900 border border-mono-700 text-white px-3 py-2.5 focus:outline-none focus:border-white">
+                            <option value="mod">МОД (MOD)</option>
+                            <option value="resourcepack">РЕСУРС-ПАК (PACK)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- MANDATORY FIELDS: VERSION & LOADER -->
+                <div class="p-4 border-2 border-dashed border-mono-700 bg-mono-900/60 space-y-3">
+                    <div class="text-white font-bold text-xs uppercase flex items-center gap-1.5">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-white"></i>
+                        Обязательная спецификация совместимости
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Mod Loader Field (MANDATORY) -->
+                        <div>
+                            <label class="block text-white uppercase text-[10px] font-bold mb-1">
+                                Загрузчик (Mod Loader) <span class="text-rose-400 font-black">*</span>
+                            </label>
+                            <select id="pubLoader" required class="w-full bg-mono-950 border border-mono-600 text-white font-bold px-3 py-2.5 focus:outline-none focus:border-white">
+                                <option value="" disabled selected>-- Выберите загрузчик --</option>
+                                <option value="Fabric">Fabric Loader</option>
+                                <option value="Forge">Minecraft Forge</option>
+                                <option value="NeoForge">NeoForge</option>
+                                <option value="Quilt">Quilt Loader</option>
+                                <option value="Vanilla">Vanilla (Для ресурс-паков)</option>
+                            </select>
+                            <span class="text-[10px] text-mono-400 mt-1 block">Укажите загрузчик для правильной работы мода</span>
+                        </div>
+
+                        <!-- Target Game Version (MANDATORY) -->
+                        <div>
+                            <label class="block text-white uppercase text-[10px] font-bold mb-1">
+                                Версия игры <span class="text-rose-400 font-black">*</span>
+                            </label>
+                            <select id="pubVersion" required class="w-full bg-mono-950 border border-mono-600 text-white font-bold px-3 py-2.5 focus:outline-none focus:border-white">
+                                <option value="" disabled selected>-- Выберите точную версию --</option>
+                                <option value="1.21.4">1.21.4</option>
+                                <option value="1.21.1">1.21.1</option>
+                                <option value="1.20.4">1.20.4</option>
+                                <option value="1.20.1">1.20.1</option>
+                                <option value="1.19.4">1.19.4</option>
+                                <option value="1.18.2">1.18.2</option>
+                                <option value="1.16.5">1.16.5</option>
+                            </select>
+                            <span class="text-[10px] text-mono-400 mt-1 block">Конкретная протестированная версия</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Short Summary -->
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Краткое резюме (в одну строку) <span class="text-white">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="pubSummary" 
+                        required 
+                        maxlength="120"
+                        placeholder="Минималистичный монохромный интерфейс и оптимизация рендера..." 
+                        class="w-full bg-mono-900 border border-mono-700 text-white px-3 py-2.5 focus:outline-none focus:border-white"
+                    >
+                </div>
+
+                <!-- Full Description with Version & Loader Notes -->
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Полное описание и инструкция установки <span class="text-white">*</span>
+                    </label>
+                    <textarea 
+                        id="pubDescription" 
+                        rows="4" 
+                        required
+                        placeholder="Опишите функции, зависимости (например Fabric API), особенности конфигурации и совместимость с другими модами..." 
+                        class="w-full bg-mono-900 border border-mono-700 text-white p-3 focus:outline-none focus:border-white font-mono"
+                    ></textarea>
+                </div>
+
+                <!-- Tags -->
+                <div>
+                    <label class="block text-mono-300 uppercase text-[10px] font-bold mb-1">
+                        Теги (через запятую)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="pubTags" 
+                        placeholder="GUI, Optimization, Minimal, Shaders, 32x" 
+                        class="w-full bg-mono-900 border border-mono-700 text-white px-3 py-2 focus:outline-none focus:border-white"
+                    >
+                </div>
+
+                <!-- Mock File Upload or URL -->
+                <div class="border border-mono-800 bg-mono-900 p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-mono-400">
+                        <i data-lucide="file-archive" class="w-5 h-5 text-white"></i>
+                        <span>Файл: <span id="fileNameDisplay" class="text-white font-mono">mono-build.jar / zip</span></span>
+                    </div>
+                    <label class="px-3 py-1.5 bg-mono-800 hover:bg-mono-700 border border-mono-600 text-white cursor-pointer uppercase text-[11px] font-bold">
+                        Выбрать файл
+                        <input type="file" class="hidden" onchange="handleFileSelected(event)">
+                    </label>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex gap-3 pt-3">
+                    <button 
+                        type="button" 
+                        onclick="closeModal('publishModal')"
+                        class="flex-1 py-3 border border-mono-700 text-mono-400 hover:text-white uppercase font-bold"
+                    >
+                        Отмена
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="flex-2 w-full py-3 bg-white text-black font-bold uppercase hover:bg-mono-200 transition-colors shadow-[4px_4px_0px_0px_#52525b]"
+                    >
+                        [ ОПУБЛИКОВАТЬ В РЕПОЗИТОРИЙ ]
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- 3. ITEM DETAILS MODAL -->
+    <div id="detailsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-mono-950 border-2 border-white max-w-2xl w-full p-6 sm:p-8 relative shadow-[10px_10px_0px_0px_#27272a] max-h-[90vh] overflow-y-auto">
+            
+            <button onclick="closeModal('detailsModal')" class="absolute top-4 right-4 text-mono-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div id="detailsContent" class="space-y-6">
+                <!-- Dynamically filled -->
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 4. GUIDELINES MODAL -->
+    <div id="guidelinesModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-mono-950 border-2 border-white max-w-xl w-full p-6 relative shadow-[8px_8px_0px_0px_#27272a]">
+            <button onclick="closeModal('guidelinesModal')" class="absolute top-4 right-4 text-mono-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white uppercase mb-4">// РЕГЛАМЕНТ ПЛАТФОРМЫ MONOMODS</h3>
+            <div class="space-y-3 text-xs text-mono-300 font-mono leading-relaxed">
+                <div class="p-2 border border-mono-800 bg-mono-900">
+                    <span class="text-white font-bold">[1] ВЕРИФИКАЦИЯ EMAIL:</span> Публиковать материалы разрешено исключительно авторизованным пользователям с подтвержденным почтовым ящиком.
+                </div>
+                <div class="p-2 border border-mono-800 bg-mono-900">
+                    <span class="text-white font-bold">[2] ЗАГРУЗЧИКИ (LOADERS):</span> Каждый мод обязан иметь метку целевого загрузчика (Fabric, Forge, NeoForge, Quilt). Публикации без указания загрузчика блокируются.
+                </div>
+                <div class="p-2 border border-mono-800 bg-mono-900">
+                    <span class="text-white font-bold">[3] ВЕРСИОННОСТЬ:</span> Указывайте точную версию игрового клиента (1.20.1, 1.21.x).
+                </div>
+                <div class="p-2 border border-mono-800 bg-mono-900">
+                    <span class="text-white font-bold">[4] СТИЛИСТИКА:</span> Мы поощряем лаконичные, качественные модификации и текстурные решения в стилях монохром, минимал и хай-тек.
+                </div>
+            </div>
+            <button onclick="closeModal('guidelinesModal')" class="mt-6 w-full py-2.5 bg-white text-black font-bold uppercase text-xs">
+                Понятно
+            </button>
+        </div>
+    </div>
+
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-white text-black px-4 py-3 border-2 border-black font-mono text-xs font-bold shadow-[4px_4px_0_0_#71717a] transition-all transform translate-y-20 opacity-0 pointer-events-none flex items-center gap-3">
+        <span id="toastIcon"></span>
+        <span id="toastMessage">Уведомление</span>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        // Default Mock Data for Mods and Resource Packs
+        const INITIAL_MODS = [
+            {
+                id: "mm-001",
+                title: "MonoCraft UI // Stark Minimalist",
+                type: "resourcepack",
+                loader: "Vanilla",
+                version: "1.21.4",
+                author: "pixel_architect@mono.xyz",
+                authorName: "PixelArchitect",
+                downloads: 4820,
+                summary: "Полная замена стандартного интерфейса на строгий высококонтрастный монохром с четкими шрифтами.",
+                description: "MonoCraft UI преображает все стандартные контейнеры, инвентарь, экран настроек и HUD в строгий минималистичный черно-белый стиль. Полная поддержка 1.21.4. Не требует Fabric/Forge, устанавливается напрямую в resourcepacks.",
+                tags: ["UI", "Minimal", "HUD", "Dark-Mode"],
+                date: "2025-02-14",
+                fileName: "MonoCraft_UI_v2.4.zip"
+            },
+            {
+                id: "mm-002",
+                title: "Sodium Mono Edition",
+                type: "mod",
+                loader: "Fabric",
+                version: "1.21.1",
+                author: "caffeine_dev@protocol.org",
+                authorName: "CaffeineMono",
+                downloads: 14209,
+                summary: "Высокооптимизированный графический движок для Fabric с кастомным интерфейсом.",
+                description: "Форк популярного оптимизатора с монохромной панелью настроек производительности, улучшенным распределением чанков и снижением фризов. Требует Fabric Loader 0.15+.",
+                tags: ["Optimization", "Performance", "FPS", "Fabric"],
+                date: "2025-02-12",
+                fileName: "sodium-mono-fabric-1.21.1.jar"
+            },
+            {
+                id: "mm-003",
+                title: "Create: Monolithic Metallurgy",
+                type: "mod",
+                loader: "Forge",
+                version: "1.20.1",
+                author: "forge_master@industrial.io",
+                authorName: "IronEngineer",
+                downloads: 8740,
+                summary: "Аддон для Create с монохромными кинетическими блоками и прецизионными механизмами.",
+                description: "Добавляет в Forge 1.20.1 набор механизмов из черной стали, монохромные дисплеи скорости вращения и автоматизированные верстаки. Полная совместимость с базовым Create 0.5.1.",
+                tags: ["Tech", "Create", "Automation", "Forge"],
+                date: "2025-01-29",
+                fileName: "create_monolithic_forge-1.20.1.jar"
+            },
+            {
+                id: "mm-004",
+                title: "Oculus Neo Shaders",
+                type: "mod",
+                loader: "NeoForge",
+                version: "1.20.4",
+                author: "neo_coder@graphics.net",
+                authorName: "NeoGraphics",
+                downloads: 6310,
+                summary: "Шейдерный загрузчик для среды NeoForge с преднастроенными монохромными профилями.",
+                description: "Обеспечивает поддержку шейдеров в среде NeoForge 1.20.4. В комплект встроен специальный пресет 'MonoNoir' с кинематографичным контрастом и тенями.",
+                tags: ["Shaders", "NeoForge", "Render", "Graphics"],
+                date: "2025-02-01",
+                fileName: "oculus-neoforge-1.20.4.jar"
+            },
+            {
+                id: "mm-005",
+                title: "Monochrome Faith 32x",
+                type: "resourcepack",
+                loader: "Vanilla",
+                version: "1.20.4",
+                author: "texture_god@artcraft.net",
+                authorName: "MonoArtist",
+                downloads: 11950,
+                summary: "Классический верный пак текстур повышенной четкости в черно-белой эстетике.",
+                description: "32x32 ресурс-пак, переосмысляющий все руды, блоки природы, броню и инструменты через призму минималистичной монохромной градации.",
+                tags: ["Textures", "32x", "Faithful", "Clean"],
+                date: "2025-01-18",
+                fileName: "MonoFaith_32x_1.20.4.zip"
+            },
+            {
+                id: "mm-006",
+                title: "Quilt Status HUD Pro",
+                type: "mod",
+                loader: "Quilt",
+                version: "1.20.1",
+                author: "quilt_team@quiltmc.org",
+                authorName: "QuiltDev",
+                downloads: 3120,
+                summary: "Миниатюрный информер брони, прочности и эффектов на чистом моно-шрифте.",
+                description: "Модификация исключительно для загрузчика Quilt. Выводит технические параметры состояния персонажа с нулевой просадкой FPS. Настраиваемые координаты и размер виджетов.",
+                tags: ["HUD", "Quilt", "Info", "Armor"],
+                date: "2025-02-08",
+                fileName: "quilt_status_hud-1.20.1.jar"
+            }
+        ];
+
+        // State variables
+        let items = [];
+        let currentUser = null;
+        let activeTab = 'all';
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load items from localStorage or fallback to initial
+            const savedItems = localStorage.getItem('mono_mods_items');
+            if (savedItems) {
+                try {
+                    items = JSON.parse(savedItems);
+                } catch(e) {
+                    items = [...INITIAL_MODS];
+                }
+            } else {
+                items = [...INITIAL_MODS];
+                saveItems();
+            }
+
+            // Check logged user in localStorage
+            const savedUser = localStorage.getItem('mono_mods_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                } catch(e) {
+                    currentUser = null;
+                }
+            }
+
+            // Clock
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set year
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Render UI
+            updateAuthUI();
+            applyFilters();
+            updateStats();
+            lucide.createIcons();
+        });
+
+        // Time ticker
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0] + ' UTC';
+            const el = document.getElementById('systemTime');
+            if(el) el.textContent = timeStr;
+        }
+
+        // Storage helpers
+        function saveItems() {
+            localStorage.setItem('mono_mods_items', JSON.stringify(items));
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalEl = document.getElementById('statTotalItems');
+            if (totalEl) totalEl.textContent = items.length;
+        }
+
+        // Auth Logic (Email Required)
+        function updateAuthUI() {
+            const container = document.getElementById('authSection');
+            if (!container) return;
+
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center gap-2 border border-mono-700 bg-mono-900 px-3 py-1.5 text-xs">
+                        <div class="w-2 h-2 bg-emerald-400"></div>
+                        <div class="flex flex-col text-left">
+                            <span class="text-white font-bold tracking-tight">${currentUser.nickname}</span>
+                            <span class="text-[9px] text-mono-400 truncate max-w-[120px]">${currentUser.email}</span>
+                        </div>
+                        <button onclick="logout()" title="Выйти" class="ml-2 text-mono-500 hover:text-rose-400">
+                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal()" class="border border-mono-700 hover:border-white px-3.5 py-2 text-xs font-bold text-mono-300 hover:text-white uppercase transition-all">
+                        // Войти / Email
+                    </button>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function openAuthModal() {
+            openModal('authModal');
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const nickname = document.getElementById('authNickname').value.trim();
+            const password = document.getElementById('authPassword').value;
+
+            if (!email || !nickname || !password) {
+                showToast('Заполните все поля регистрации!', 'error');
+                return;
+            }
+
+            // Simple email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Введите корректный email адрес!', 'error');
+                return;
+            }
+
+            currentUser = {
+                email: email,
+                nickname: nickname,
+                verified: true,
+                joinedDate: new Date().toISOString()
+            };
+
+            localStorage.setItem('mono_mods_user', JSON.stringify(currentUser));
+            closeModal('authModal');
+            updateAuthUI();
+            showToast(`Успешный вход: ${nickname} (${email})`, 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('mono_mods_user');
+            updateAuthUI();
+            showToast('Вы вышли из системы', 'info');
+        }
+
+        // Publish flow
+        function handlePublishClick() {
+            if (!currentUser) {
+                showToast('[ТРЕБУЕТСЯ РЕГИСТРАЦИЯ]: Войдите по почте перед публикацией!', 'error');
+                openAuthModal();
+                return;
+            }
+
+            // Open publish modal
+            document.getElementById('pubAuthorEmail').textContent = currentUser.email;
+            openModal('publishModal');
+        }
+
+        function handleFileSelected(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileNameDisplay').textContent = file.name;
+            }
+        }
+
+        function handlePublishSubmit(e) {
+            e.preventDefault();
+
+            if (!currentUser) {
+                showToast('Ошибка сессии. Авторизуйтесь снова.', 'error');
+                return;
+            }
+
+            const title = document.getElementById('pubTitle').value.trim();
+            const type = document.getElementById('pubType').value;
+            const loader = document.getElementById('pubLoader').value;
+            const version = document.getElementById('pubVersion').value;
+            const summary = document.getElementById('pubSummary').value.trim();
+            const description = document.getElementById('pubDescription').value.trim();
+            const tagsInput = document.getElementById('pubTags').value.trim();
+            const fileNameDisplay = document.getElementById('fileNameDisplay').textContent;
+
+            // Strict Validation Checks
+            if (!title) {
+                showToast('Укажите название проекта!', 'error');
+                return;
+            }
+            if (!loader) {
+                showToast('ОБЯЗАТЕЛЬНО: Выберите загрузчик (Mod Loader)!', 'error');
+                document.getElementById('pubLoader').focus();
+                return;
+            }
+            if (!version) {
+                showToast('ОБЯЗАТЕЛЬНО: Выберите точную версию игры!', 'error');
+                document.getElementById('pubVersion').focus();
+                return;
+            }
+            if (!summary || !description) {
+                showToast('Заполните краткое и полное описание!', 'error');
+                return;
+            }
+
+            const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [loader, version];
+
+            const newItem = {
+                id: 'mm-' + Date.now().toString().slice(-4),
+                title: title,
+                type: type,
+                loader: loader,
+                version: version,
+                author: currentUser.email,
+                authorName: currentUser.nickname,
+                downloads: 1,
+                summary: summary,
+                description: description,
+                tags: tags,
+                date: new Date().toISOString().split('T')[0],
+                fileName: fileNameDisplay || `${title.toLowerCase().replace(/\s+/g, '_')}_${version}.jar`
+            };
+
+            items.unshift(newItem);
+            saveItems();
+            closeModal('publishModal');
+            document.getElementById('publishForm').reset();
+            document.getElementById('fileNameDisplay').textContent = 'mono-build.jar / zip';
+
+            applyFilters();
+            showToast(`[ОПУБЛИКОВАНО]: "${title}" добавлен в реестр!`, 'success');
+        }
+
+        // Filtering and Search System
+        function setTabFilter(type) {
+            activeTab = type;
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-white', 'text-white');
+                tab.classList.add('text-mono-400');
+            });
+            event.target.classList.add('active', 'border-white', 'text-white');
+            document.getElementById('filterType').value = type;
+            applyFilters();
+        }
+
+        function filterByLoaderOnly(loaderName) {
+            document.getElementById('filterLoader').value = loaderName;
+            applyFilters();
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            applyFilters();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterType').value = 'all';
+            document.getElementById('filterLoader').value = 'all';
+            document.getElementById('filterVersion').value = 'all';
+            document.getElementById('filterSort').value = 'newest';
+            activeTab = 'all';
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const typeFilter = document.getElementById('filterType').value;
+            const loaderFilter = document.getElementById('filterLoader').value;
+            const versionFilter = document.getElementById('filterVersion').value;
+            const sortFilter = document.getElementById('filterSort').value;
+
+            // Toggle clear button
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (query) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            // Filter logic
+            let filtered = items.filter(item => {
+                // Type
+                if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+                // Loader (Mandatory key)
+                if (loaderFilter !== 'all' && item.loader !== loaderFilter) return false;
+                // Version (Mandatory key)
+                if (versionFilter !== 'all' && item.version !== versionFilter) return false;
+                // Search query
+                if (query) {
+                    const matchTitle = item.title.toLowerCase().includes(query);
+                    const matchSummary = item.summary.toLowerCase().includes(query);
+                    const matchAuthor = item.authorName.toLowerCase().includes(query) || item.author.toLowerCase().includes(query);
+                    const matchTags = item.tags && item.tags.some(t => t.toLowerCase().includes(query));
+                    if (!matchTitle && !matchSummary && !matchAuthor && !matchTags) return false;
+                }
+                return true;
+            });
+
+            // Sorting
+            if (sortFilter === 'newest') {
+                filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            } else if (sortFilter === 'downloads') {
+                filtered.sort((a, b) => b.downloads - a.downloads);
+            } else if (sortFilter === 'name') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            // Update badge chips
+            renderFilterBadges(typeFilter, loaderFilter, versionFilter, query);
+            
+            // Render Cards
+            renderGrid(filtered);
+        }
+
+        function renderFilterBadges(type, loader, version, query) {
+            const container = document.getElementById('filterTagsBadge');
+            let badges = [];
+
+            if (type !== 'all') badges.push(`ТИП: ${type.toUpperCase()}`);
+            if (loader !== 'all') badges.push(`LOADER: ${loader}`);
+            if (version !== 'all') badges.push(`VER: ${version}`);
+            if (query) badges.push(`"${query}"`);
+
+            if (badges.length === 0) {
+                container.innerHTML = `<span class="text-mono-600 font-mono">[ВСЕ РЕСУРСЫ]</span>`;
+            } else {
+                container.innerHTML = badges.map(b => `
+                    <span class="px-2 py-0.5 bg-mono-800 text-white border border-mono-700 text-[10px]">
+                        ${b}
+                    </span>
+                `).join('');
+            }
+        }
+
+        function renderGrid(data) {
+            const grid = document.getElementById('itemsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countEl = document.getElementById('resultsCount');
+
+            countEl.textContent = data.length;
+
+            if (data.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = data.map(item => {
+                const isMod = item.type === 'mod';
+                const typeLabel = isMod ? 'МОД' : 'РЕСУРС-ПАК';
+                const typeBg = isMod ? 'bg-white text-black font-bold' : 'bg-mono-800 text-mono-200 border border-mono-700';
+
+                return `
+                    <div class="border border-mono-800 bg-mono-900/90 hover:border-white transition-all duration-200 flex flex-col justify-between group relative shadow-[2px_2px_0px_0px_#18181b] hover:shadow-[4px_4px_0px_0px_#fff]">
+                        
+                        <!-- Card Top Bar -->
+                        <div class="p-4 sm:p-5 border-b border-mono-800/80">
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-[10px] px-2 py-0.5 uppercase tracking-wider font-mono ${typeBg}">
+                                    [ ${typeLabel} ]
+                                </span>
+                                
+                                <!-- Loader Badge - Highlighted as strict requirement -->
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] bg-mono-950 border border-mono-700 px-2 py-0.5 text-white font-mono font-bold">
+                                        ⚡ ${item.loader}
+                                    </span>
+                                    <span class="text-[10px] bg-mono-950 border border-mono-700 px-1.5 py-0.5 text-mono-400 font-mono">
+                                        v${item.version}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Title -->
+                            <h3 class="text-base font-bold text-white uppercase font-sans tracking-tight leading-snug group-hover:underline cursor-pointer" onclick="openDetailsModal('${item.id}')">
+                                ${item.title}
+                            </h3>
+
+                            <!-- Author info & verified check -->
+                            <div class="flex items-center gap-1.5 text-[11px] text-mono-400 mt-2">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                <span>${item.authorName}</span>
+                                <span class="text-mono-600">(${item.author})</span>
+                            </div>
+
+                            <!-- Short Summary -->
+                            <p class="text-xs text-mono-400 mt-3 line-clamp-2 font-mono leading-relaxed">
+                                ${item.summary}
+                            </p>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="p-4 bg-mono-950 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-3 text-mono-400 text-[11px]">
+                                <span class="flex items-center gap-1">
+                                    <i data-lucide="download" class="w-3.5 h-3.5 text-mono-500"></i>
+                                    <span class="font-mono">${item.downloads.toLocaleString()}</span>
+                                </span>
+                                <span class="text-mono-600">|</span>
+                                <span class="text-mono-500">${item.date || '2025-02-01'}</span>
+                            </div>
+
+                            <button 
+                                onclick="openDetailsModal('${item.id}')" 
+                                class="px-3 py-1.5 bg-mono-800 hover:bg-white hover:text-black text-white font-bold text-[10px] uppercase transition-colors tracking-wider flex items-center gap-1 border border-mono-700"
+                            >
+                                <span>СКАЧАТЬ // СПЕЦ</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Details Modal
+        function openDetailsModal(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            const container = document.getElementById('detailsContent');
+            const isMod = item.type === 'mod';
+
+            container.innerHTML = `
+                <div class="border-b border-mono-800 pb-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                        <span class="text-xs font-mono px-2 py-0.5 ${isMod ? 'bg-white text-black font-bold' : 'bg-mono-800 text-white'}">
+                            [ ${isMod ? 'МОД' : 'РЕСУРС-ПАК'} ]
+                        </span>
+                        <span class="text-xs text-mono-400">ID: <span class="text-white">${item.id}</span></span>
+                    </div>
+                    <h2 class="text-2xl font-bold font-sans text-white uppercase">${item.title}</h2>
+                    <div class="flex items-center gap-2 text-xs text-mono-400 mt-1">
+                        <i data-lucide="badge-check" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Автор: <strong class="text-white">${item.authorName}</strong></span>
+                        <span class="text-mono-600">|</span>
+                        <span>Почта: <span class="text-mono-300 font-mono">${item.author}</span></span>
+                    </div>
+                </div>
+
+                <!-- Strict compatibility block -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 bg-mono-900 border border-mono-800 text-xs">
+                    <div>
+                        <span class="text-mono-500 block text-[10px] uppercase font-bold">Целевой Загрузчик</span>
+                        <span class="text-white font-bold text-sm">⚡ ${item.loader}</span>
+                    </div>
+                    <div>
+                        <span class="text-mono-500 block text-[10px] uppercase font-bold">Версия игры</span>
+                        <span class="text-white font-bold text-sm">v${item.version}</span>
+                    </div>
+                    <div>
+                        <span class="text-mono-500 block text-[10px] uppercase font-bold">Загрузок</span>
+                        <span class="text-white font-bold text-sm">${item.downloads.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="space-y-2">
+                    <div class="text-[11px] text-mono-400 uppercase font-bold">// ПОЛНОЕ ОПИСАНИЕ И УСТАНОВКА</div>
+                    <div class="text-xs text-mono-300 leading-relaxed font-mono bg-mono-900/50 p-4 border border-mono-800 whitespace-pre-wrap">
+${item.description}
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                ${item.tags && item.tags.length ? `
+                <div>
+                    <div class="text-[10px] text-mono-500 uppercase mb-1">Метки / Tags:</div>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${item.tags.map(t => `<span class="px-2 py-0.5 text-[10px] bg-mono-900 border border-mono-800 text-mono-300">#${t}</span>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Download Area -->
+                <div class="p-4 bg-mono-900 border-2 border-white flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <div class="space-y-0.5">
+                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <i data-lucide="file-check" class="w-4 h-4 text-emerald-400"></i>
+                            ${item.fileName || 'mono-release.jar'}
+                        </div>
+                        <div class="text-[10px] text-mono-400 font-mono">Совместимо с: ${item.loader} (${item.version})</div>
+                    </div>
+
+                    <button 
+                        onclick="triggerDownload('${item.id}')"
+                        class="px-6 py-3 bg-white hover:bg-mono-200 text-black font-bold uppercase text-xs flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_#71717a]"
+                    >
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>СКАЧАТЬ ФАЙЛ</span>
+                    </button>
+                </div>
+            `;
+
+            openModal('detailsModal');
+            lucide.createIcons();
+        }
+
+        function triggerDownload(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.downloads += 1;
+                saveItems();
+                applyFilters();
+                showToast(`[ЗАГРУЗКА НАЧАТА]: ${item.fileName || item.title}`, 'success');
+            }
+        }
+
+        // Generic modal helpers
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function openGuidelinesModal() {
+            openModal('guidelinesModal');
+        }
+
+        // Close on ESC
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('authModal');
+                closeModal('publishModal');
+                closeModal('detailsModal');
+                closeModal('guidelinesModal');
+            }
+        });
+
+        // Toast Engine
+        let toastTimeout;
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
+
+            clearTimeout(toastTimeout);
+
+            msgEl.textContent = message;
+
+            if (type === 'error') {
+                toast.className = "fixed bottom-6 right-6 z-50 bg-rose-950 text-white border-2 border-rose-500 px-4 py-3 font-mono text-xs font-bold shadow-[4px_4px_0_0_#000] flex items-center gap-2 transform transition-all";
+                iconEl.innerHTML = '⚠️';
+            } else if (type === 'success') {
+                toast.className = "fixed bottom-6 right-6 z-50 bg-white text-black border-2 border-black px-4 py-3 font-mono text-xs font-bold shadow-[4px_4px_0_0_#71717a] flex items-center gap-2 transform transition-all";
+                iconEl.innerHTML = '⚡';
+            } else {
+                toast.className = "fixed bottom-6 right-6 z-50 bg-mono-900 text-white border-2 border-white px-4 py-3 font-mono text-xs font-bold shadow-[4px_4px_0_0_#27272a] flex items-center gap-2 transform transition-all";
+                iconEl.innerHTML = 'ℹ️';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
